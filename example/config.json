@@ -1,0 +1,12 @@
+{
+  "logger": {
+    "level": "error",
+    "console": false,
+    "outputs": [
+      "stderr"
+    ]
+  },
+  "server": {
+    "addr": ":8090"
+  }
+}

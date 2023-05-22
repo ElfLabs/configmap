@@ -1,0 +1,19 @@
+logger:
+  level: debug
+  outputs: [ ]
+  server:
+    level: info
+    console: true
+    filename: server.log
+    outputs:
+      - stdout
+      - stderr
+  database:
+    level: error
+    console: false
+    filename: database.log
+    outputs:
+      - stderr
+
+server:
+  addr: :8090
