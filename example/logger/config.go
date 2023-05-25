@@ -1,5 +1,11 @@
 package logger
 
+import (
+	"fmt"
+	"log"
+	"reflect"
+)
+
 type Logger struct {
 	Level      string            `json:"level,omitempty" yaml:"level,omitempty"`
 	Console    bool              `json:"console" yaml:"console"`
@@ -17,4 +23,18 @@ func NewDefaultConfig() *Logger {
 			"stderr",
 		},
 	}
+}
+
+func (l *Logger) Update(v any) error {
+	tmp, ok := v.(*Logger)
+	if !ok {
+		return fmt.Errorf("unexpect type: %s", reflect.TypeOf(l))
+	}
+	*l = *tmp
+	log.Printf("logger updated!")
+	return nil
+}
+
+func (l *Logger) Changed() {
+	log.Printf("logger changed!")
 }

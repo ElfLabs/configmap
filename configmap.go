@@ -8,6 +8,8 @@ import (
 
 	"github.com/armon/go-radix"
 	"github.com/mitchellh/copystructure"
+
+	"github.com/ElfLabs/configmap/util"
 )
 
 const (
@@ -76,10 +78,50 @@ func (m *ConfigMap) Load(provider Provider, parser Parser, opts ...Option) error
 
 	m.tree.Walk(func(key string, item interface{}) bool {
 		config, exist, err := nestedMapNoCopy(configs, strings.Split(key, PathSeparator)...)
-		if !exist || err != nil {
+		switch {
+		case !exist:
+			return false
+		case err != nil:
+			log.Printf("get %s error: %s", key, err)
 			return false
 		}
-		options.DecodeItemFunc(config, item, tagName)
+
+		lock, ok := item.(sync.Locker)
+		if !ok {
+			lock = util.NewNopLock()
+		}
+		lock.Lock()
+		defer lock.Unlock()
+
+		var target = item
+		// UpdateEvent
+		event, ok := item.(UpdateEvent)
+		if ok {
+			tmp, err := copystructure.Copy(item)
+			if err != nil {
+				log.Printf("copy item: %s error: %s", key, err)
+				return false
+			}
+			target = tmp
+		}
+
+		changed, err := options.DecodeItemFunc(config, target, tagName)
+		switch {
+		case err != nil:
+			log.Printf("decode to item: %s error: %s", key, err)
+			return false
+		case !changed:
+			return false
+		case ok:
+			if err = event.Update(target); err != nil {
+				log.Printf("update item: %s error: %s", key, err)
+				return false
+			}
+		}
+		// NotifyEvent
+		if iface, ok := item.(NotifyEvent); ok {
+			iface.Changed()
+		}
 		return false
 	})
 

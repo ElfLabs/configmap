@@ -4,6 +4,7 @@ go 1.20
 
 require (
 	github.com/armon/go-radix v1.0.0 // indirect
+	github.com/ElfLabs/configmap/parsers/yaml v0.1.0
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/kelseyhightower/envconfig v1.4.0 // indirect

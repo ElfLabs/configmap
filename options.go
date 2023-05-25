@@ -1,5 +1,9 @@
 package configmap
 
+import (
+	"github.com/ElfLabs/configmap/util"
+)
+
 type Option func(opts *Options)
 type Options struct {
 	DecodeItemFunc DecodeItemFunc
@@ -15,7 +19,7 @@ func (o *Options) apply(opts ...Option) *Options {
 
 func newOptions(opts ...Option) Options {
 	var o = Options{
-		DecodeItemFunc: JsonDecodeItem,
+		DecodeItemFunc: util.JsonDecodeItem,
 	}
 	o.apply(opts...)
 	return o
