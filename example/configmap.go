@@ -18,7 +18,7 @@ func ConfigMapDemo() {
 	conf.Register("debug", true)
 	conf.Register("logger", logger.NewDefaultConfig())
 	conf.Register("logger.server", logger.NewDefaultConfig())
-	conf.Register("logger.server.1", logger.NewDefaultConfig())
+	conf.Register("logger.server", logger.NewDefaultConfig())
 	conf.Register("logger.database", logger.NewDefaultConfig())
 	conf.Register("database.redis", map[string]any{
 		"addr": ":9673",
