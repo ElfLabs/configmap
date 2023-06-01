@@ -1,4 +1,4 @@
-module github.com/ElfLabs/configmap/parsers/yml
+module github.com/ElfLabs/configmap/parsers/yaml
 
 go 1.18
 
