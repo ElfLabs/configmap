@@ -1,0 +1,4 @@
+logger:
+  name: test
+  level: debug
+  console: true
