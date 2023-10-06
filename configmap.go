@@ -2,6 +2,7 @@ package configmap
 
 import (
 	"encoding/json"
+	"fmt"
 	"strings"
 	"sync"
 
@@ -134,6 +135,27 @@ func (m *ConfigMap) Load(provider Provider, parser Parser, opts ...Option) error
 	return nil
 }
 
+func (m *ConfigMap) GetRaw(path ...string) (any, bool) {
+	m.locker.RLock()
+	defer m.locker.RUnlock()
+
+	key := strings.Join(path, PathSeparator)
+	item, found := m.tree.Get(key)
+	if !found {
+		return nil, false
+	}
+
+	return item, true
+}
+
+func (m *ConfigMap) MustGetRaw(path ...string) any {
+	item, ok := m.GetRaw(path...)
+	if !ok {
+		panic(fmt.Errorf("not found config item in path: %s", strings.Join(path, PathSeparator)))
+	}
+	return item
+}
+
 func (m *ConfigMap) Get(path ...string) (any, bool) {
 	m.locker.RLock()
 	defer m.locker.RUnlock()
@@ -153,4 +175,12 @@ func (m *ConfigMap) Get(path ...string) (any, bool) {
 		return *ptrOut, true
 	}
 	return out, true
+}
+
+func (m *ConfigMap) MustGet(path ...string) any {
+	item, ok := m.Get(path...)
+	if !ok {
+		panic(fmt.Errorf("not found config item in path: %s", strings.Join(path, PathSeparator)))
+	}
+	return item
 }
